@@ -32,9 +32,16 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+function generateRandomString() {
+  return Math.random().toString(36).slice(2,8);
+}
+
 app.post("/urls", (req, res) => {
-  console.log(req.body);
-  res.send("OK");
+  res.status(200);
+  let shortURL = generateRandomString();
+  let longURL = req.body.longURL;
+  urlDatabase[shortURL] = longURL;
+  res.redirect(`/urls/${shortURL}`);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
