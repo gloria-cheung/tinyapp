@@ -16,7 +16,10 @@
         <button class="btn btn-outline-dark">Login</button>
       </form> 
     <% } else { %> 
-      <p>Logged In As: <%= username %>!</p>
+      <form action="/logout" method="post">
+        <label for="">Logged In As: <%= username %>!</label>
+        <button type="submit" class="btn btn-outline-dark">Logout</button>
+      </form>
     <% } %>   
   </nav>
 </header>
