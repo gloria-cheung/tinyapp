@@ -41,8 +41,8 @@ app.get("/urls/new", (req, res) => {
 // POST request using info from form submitted to alter urlDatabase object and redirect to show the URL is created
 app.post("/urls", (req, res) => {
   res.status(200);
-  let shortURL = generateRandomString();
-  let longURL = req.body.longURL;
+  const shortURL = generateRandomString();
+  const longURL = req.body.longURL;
   urlDatabase[shortURL] = longURL;
   res.redirect(`/urls/${shortURL}`);
 });
@@ -51,6 +51,12 @@ app.post("/urls", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
   res.render("urls_show", templateVars);
+});
+
+// GET request to redirect us to the longURL webpage
+app.get("/u/:shortURL", (req, res) => {
+  const longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
 });
 
 app.listen(PORT, () => {
