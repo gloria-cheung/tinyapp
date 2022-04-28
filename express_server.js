@@ -2,8 +2,10 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
 app.set("view engine", "ejs");
 
 const urlDatabase = {
@@ -29,7 +31,10 @@ app.get("/hello", (req, res) => {
 
 // GET req to path /urls that displays table of long and short URLs
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = { 
+    urls: urlDatabase, 
+    username: req.cookies["username"]
+  };
   res.render("urls_index", templateVars);
 });
 
@@ -59,16 +64,25 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+// Delete path from form
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
   delete urlDatabase[shortURL];
   res.redirect("/urls");
 });
 
+// Update path from form
 app.post("/urls/:shortURL", (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = req.params.shortURL;
   urlDatabase[shortURL] = longURL;
+  res.redirect("/urls");
+});
+
+// login path using cookies
+app.post("/login", (req, res) => {
+  let username = req.body.username;
+  res.cookie("username", username);
   res.redirect("/urls");
 });
 
