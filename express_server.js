@@ -11,6 +11,10 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+function generateRandomString() {
+  return Math.random().toString(36).slice(2,8);
+}
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -23,19 +27,18 @@ app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
+// GET req to path /urls that displays table of long and short URLs
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
+// GET request to /urls/new to display form for submitting URL to make into shortURL
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
-function generateRandomString() {
-  return Math.random().toString(36).slice(2,8);
-}
-
+// POST request using info from form submitted to alter urlDatabase object and redirect to show the URL is created
 app.post("/urls", (req, res) => {
   res.status(200);
   let shortURL = generateRandomString();
@@ -44,6 +47,7 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
+// GET request to display single shortURL with corresponding longURL
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
   res.render("urls_show", templateVars);
