@@ -1,3 +1,5 @@
+// run nodemon with npm start
+
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
@@ -27,6 +29,14 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
+});
+
+//GET req to /register to display form to login
+app.get("/register", (req, res) => {
+  const templateVars = {
+    username: req.cookies["username"]
+  };
+  res.render("register", templateVars);
 });
 
 // GET req to path /urls that displays table of long and short URLs
