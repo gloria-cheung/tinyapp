@@ -28,14 +28,24 @@ function createNewUser(req, res) {
   const password = req.body.password;
   if (!email || !password) {
     res.status(400).send("email and/or password cannot be empty");
-  }
-  const ID = generateRandomString();
-  users[ID] = {
+  } else {
+    const ID = generateRandomString();
+    users[ID] = {
     id: ID,
     email: email,
     password: password
-  };
-  return users[ID];
+    };
+    return users[ID];
+  }
+}
+
+function checkEmailExist(newEmail) {
+  for (let user in users) {
+    if (users[user].email === newEmail) {
+      return false;
+    } 
+  }
+  return true;
 }
 
 app.get("/", (req, res) => {
@@ -61,9 +71,14 @@ app.get("/register", (req, res) => {
 
 // POST req to /register to add user to users object and display in header as logged in
 app.post("/register", (req, res) => {
-  const newUser = createNewUser(req, res);
-  res.cookie("user_id", newUser.id);
-  res.redirect("/urls");
+  const emailOK = checkEmailExist(req.body.email);
+  if (!emailOK) {
+    res.status(400).send("email already used, please try another email");
+  } else {
+    const newUser = createNewUser(req, res);
+    res.cookie("user_id", newUser.id);
+    res.redirect("/urls");
+  }
 });
 
 // GET req to path /urls that displays table of long and short URLs
