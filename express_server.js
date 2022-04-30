@@ -15,6 +15,7 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+// when new users are made through registration, pushed onto this empty object 
 const users = {};
 
 function generateRandomString() {
