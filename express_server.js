@@ -43,6 +43,7 @@ app.get("/register", (req, res) => {
   res.render("register", templateVars);
 });
 
+// POST req to /register to add user to users object and display in header as logged in
 app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
