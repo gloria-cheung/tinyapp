@@ -18,8 +18,24 @@ const urlDatabase = {
 // when new users are made through registration, pushed onto this empty object 
 const users = {};
 
+// helper functions:
 function generateRandomString() {
   return Math.random().toString(36).slice(2,8);
+}
+
+function createNewUser(req, res) {
+  const email = req.body.email;
+  const password = req.body.password;
+  if (!email || !password) {
+    res.status(400).send("email and/or password cannot be empty");
+  }
+  const ID = generateRandomString();
+  users[ID] = {
+    id: ID,
+    email: email,
+    password: password
+  };
+  return users[ID];
 }
 
 app.get("/", (req, res) => {
@@ -45,15 +61,8 @@ app.get("/register", (req, res) => {
 
 // POST req to /register to add user to users object and display in header as logged in
 app.post("/register", (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
-  const ID = generateRandomString();
-  users[ID] = {
-    id: ID,
-    email: email,
-    password: password
-  };
-  res.cookie("user_id", ID);
+  const newUser = createNewUser(req, res);
+  res.cookie("user_id", newUser.id);
   res.redirect("/urls");
 });
 
