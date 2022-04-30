@@ -15,7 +15,7 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-// when new users are made through registration, pushed onto this empty object 
+// when new users are made through registration, pushed onto this empty object
 const users = {};
 
 // helper functions:
@@ -53,7 +53,7 @@ app.get("/hello", (req, res) => {
 //GET req to /register to display form to login
 app.get("/register", (req, res) => {
   const templateVars = {
-    user_id: req.cookies["user_id"],
+    userID: req.cookies["user_id"],
     user: users[req.cookies["user_id"]]
   };
   res.render("register", templateVars);
