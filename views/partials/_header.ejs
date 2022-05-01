@@ -9,16 +9,20 @@
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
-    </div>
+    
     <% if (!user) { %> 
-      <button class="btn btn-outline-dark"> <a href="/register">Register</a></button>
-      <button class="btn btn-outline-dark"> <a href="/login">Login</a></button>
-      
+      <div class="navbar-nav ml-auto">
+        <a class="nav-item nav-link" href="/register">Register</a>
+        <a class="nav-item nav-link" href="/login">Login</a>
+      </div>
+    </div>
     <% } else { %> 
-      <form action="/logout" method="post">
-        <label for="">Logged In As: <%= user.email %>!</label>
-        <button type="submit" class="btn btn-outline-dark">Logout</button>
-      </form>
+      <div class="ml-auto">
+        <form action="/logout" method="post">
+          <label for="">Logged In As: <%= user.email %>!</label>
+          <button type="submit" class="btn btn-outline-dark">Logout</button>
+        </form>
+      </div>      
     <% } %>   
   </nav>
 </header>
