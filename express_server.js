@@ -23,29 +23,33 @@ function generateRandomString() {
   return Math.random().toString(36).slice(2,8);
 }
 
-function createNewUser(req, res) {
+function createNewUser(req) {
   const email = req.body.email;
   const password = req.body.password;
-  if (!email || !password) {
-    res.status(400).send("email and/or password cannot be empty");
-  } else {
-    const ID = generateRandomString();
-    users[ID] = {
-      id: ID,
-      email: email,
-      password: password
-    };
-    return users[ID];
-  }
+  const ID = generateRandomString();
+  users[ID] = {
+    id: ID,
+    email: email,
+    password: password
+  };
+  return users[ID];
 }
 
 function checkEmailExist(newEmail) {
   for (let user in users) {
     if (users[user].email === newEmail) {
-      return false;
+      return users[user];
     }
   }
-  return true;
+  return false;
+}
+
+function checkPassword(user, newPassword) {
+  if (user.password === newPassword) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 app.get("/", (req, res) => {
@@ -71,11 +75,11 @@ app.get("/register", (req, res) => {
 
 // POST req to /register to add user to users object and display in header as logged in
 app.post("/register", (req, res) => {
-  const emailOK = checkEmailExist(req.body.email);
-  if (!emailOK) {
+  const user = checkEmailExist(req.body.email);
+  if (user) {
     res.status(400).send("email already used, please try another email");
   } else {
-    const newUser = createNewUser(req, res);
+    const newUser = createNewUser(req);
     res.cookie("user_id", newUser.id);
     res.redirect("/urls");
   }
@@ -92,9 +96,18 @@ app.get("/login", (req, res) => {
 
 // new POST req to /login
 app.post("/login", (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
-  res.redirect("/urls");
+  const user = checkEmailExist(req.body.email);
+  const passwordCorrect = checkPassword(user, req.body.password);
+  if (user) {
+    if (passwordCorrect) {
+      res.cookie("user_id", user.id);
+      res.redirect("/urls");
+    } else {
+      res.status(403).send("password incorrect for given email")
+    }
+  } else {
+    res.status(403).send("email cannot be found");
+  }
 });
 
 //logout
@@ -110,6 +123,7 @@ app.get("/urls", (req, res) => {
     userID: req.cookies["user_id"],
     user: users[req.cookies["user_id"]]
   };
+  console.log(users)
   res.render("urls_index", templateVars);
 });
 
