@@ -85,7 +85,7 @@ app.post("/register", (req, res) => {
   }
 });
 
-// new GET req to display login form 
+// new GET req to display login form
 app.get("/login", (req, res) => {
   const templateVars = {
     userID: req.cookies["user_id"],
@@ -103,7 +103,7 @@ app.post("/login", (req, res) => {
       res.cookie("user_id", user.id);
       res.redirect("/urls");
     } else {
-      res.status(403).send("password incorrect for given email")
+      res.status(403).send("password incorrect for given email");
     }
   } else {
     res.status(403).send("email cannot be found");
@@ -123,7 +123,7 @@ app.get("/urls", (req, res) => {
     userID: req.cookies["user_id"],
     user: users[req.cookies["user_id"]]
   };
-  console.log(users)
+  console.log(users);
   res.render("urls_index", templateVars);
 });
 
