@@ -31,9 +31,9 @@ function createNewUser(req, res) {
   } else {
     const ID = generateRandomString();
     users[ID] = {
-    id: ID,
-    email: email,
-    password: password
+      id: ID,
+      email: email,
+      password: password
     };
     return users[ID];
   }
@@ -43,7 +43,7 @@ function checkEmailExist(newEmail) {
   for (let user in users) {
     if (users[user].email === newEmail) {
       return false;
-    } 
+    }
   }
   return true;
 }
@@ -79,6 +79,28 @@ app.post("/register", (req, res) => {
     res.cookie("user_id", newUser.id);
     res.redirect("/urls");
   }
+});
+
+// new GET req to display login form 
+app.get("/login", (req, res) => {
+  const templateVars = {
+    userID: req.cookies["user_id"],
+    user: users[req.cookies["user_id"]]
+  };
+  res.render("login", templateVars);
+});
+
+// new POST req to /login
+app.post("/login", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  res.redirect("/urls");
+});
+
+//logout
+app.post("/logout", (req, res) => {
+  res.clearCookie("user_id");
+  res.redirect("/urls");
 });
 
 // GET req to path /urls that displays table of long and short URLs
@@ -148,12 +170,6 @@ app.post("/urls/:shortURL", (req, res) => {
 //   res.cookie("username", username);
 //   res.redirect("/urls");
 // });
-
-//logout
-app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
-  res.redirect("/urls");
-});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
