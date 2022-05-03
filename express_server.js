@@ -8,7 +8,7 @@ const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
 const morgan = require("morgan");
 const bcrypt = require("bcryptjs");
-const getUserByEmail = require("./helpers");
+const { getUserByEmail } = require("./helpers");
 
 app.use(bodyParser.urlencoded({extended: true}));
 // app.use(cookieParser());
