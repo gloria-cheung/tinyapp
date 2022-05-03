@@ -6,6 +6,7 @@ const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
+const bcrypt = require("bcryptjs");
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
@@ -34,11 +35,12 @@ function generateRandomString() {
 function createNewUser(req) {
   const email = req.body.email;
   const password = req.body.password;
+  const hashedPassword = bcrypt.hashSync(password, 10);
   const ID = generateRandomString();
   users[ID] = {
     id: ID,
     email: email,
-    password: password
+    hashedPassword: hashedPassword
   };
   return users[ID];
 }
@@ -53,11 +55,7 @@ function checkEmailExist(newEmail) {
 }
 
 function checkPassword(user, newPassword) {
-  if (user.password === newPassword) {
-    return true;
-  } else {
-    return false;
-  }
+  return bcrypt.compareSync(newPassword, user.hashedPassword);
 }
 
 function urlsForUser(id) {
@@ -116,8 +114,8 @@ app.get("/login", (req, res) => {
 // new POST req to /login
 app.post("/login", (req, res) => {
   const user = checkEmailExist(req.body.email);
-  const passwordCorrect = checkPassword(user, req.body.password);
   if (user) {
+    const passwordCorrect = checkPassword(user, req.body.password);
     if (passwordCorrect) {
       res.cookie("user_id", user.id);
       res.redirect("/urls");
@@ -143,6 +141,7 @@ app.get("/urls", (req, res) => {
     user: users[req.cookies["user_id"]],
     urls: urls
   };
+  console.log(users)
   res.render("urls_index", templateVars);
 });
 
