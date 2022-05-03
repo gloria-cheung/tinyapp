@@ -50,7 +50,7 @@ app.post("/register", (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
     const hashedPassword = bcrypt.hashSync(password, 10);
-    const newUser = createNewUser(email, hashedPassword);
+    const newUser = createNewUser(email, hashedPassword, users);
     req.session.user_id = newUser.id;
     res.redirect("/urls");
   }
