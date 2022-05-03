@@ -60,6 +60,17 @@ function checkPassword(user, newPassword) {
   }
 }
 
+function urlsForUser(id) {
+  const urls = {};
+  for (let url in urlDatabase) {
+    if (urlDatabase[url].userID === id) {
+      urls[url] = {};
+      urls[url] = urlDatabase[url];
+    }
+  }
+  return urls;
+}
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -126,12 +137,12 @@ app.post("/logout", (req, res) => {
 
 // GET req to path /urls that displays table of long and short URLs
 app.get("/urls", (req, res) => {
+  const urls = urlsForUser(req.cookies["user_id"]);
   const templateVars = {
-    urls: urlDatabase,
     userID: req.cookies["user_id"],
-    user: users[req.cookies["user_id"]]
+    user: users[req.cookies["user_id"]],
+    urls: urls
   };
-  console.log(users);
   res.render("urls_index", templateVars);
 });
 
@@ -153,7 +164,10 @@ app.post("/urls", (req, res) => {
   res.status(200);
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
+  const userID = req.cookies["user_id"];
+  urlDatabase[shortURL] = {};
   urlDatabase[shortURL].longURL = longURL;
+  urlDatabase[shortURL].userID = userID;
   res.redirect(`/urls/${shortURL}`);
 });
 
