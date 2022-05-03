@@ -141,7 +141,7 @@ app.get("/urls", (req, res) => {
     user: users[req.cookies["user_id"]],
     urls: urls
   };
-  console.log(users)
+  console.log(users);
   res.render("urls_index", templateVars);
 });
 
@@ -220,7 +220,7 @@ app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   if (urlDatabase[shortURL].userID === req.cookies["user_id"]) {
     if (!urlDatabase[shortURL]) {
-      res.status(400).send("this URL does not exist")
+      res.status(400).send("this URL does not exist");
     } else {
       urlDatabase[shortURL].longURL = longURL;
       res.redirect("/urls");
