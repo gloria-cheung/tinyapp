@@ -1,4 +1,5 @@
 // run nodemon with npm start
+// run tests with npm test
 
 const express = require("express");
 const app = express();
@@ -8,7 +9,7 @@ const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
 const morgan = require("morgan");
 const bcrypt = require("bcryptjs");
-const { getUserByEmail } = require("./helpers");
+const { getUserByEmail, generateRandomString, createNewUser, urlDatabase, users, urlsForUser } = require("./helpers");
 
 app.use(bodyParser.urlencoded({extended: true}));
 // app.use(cookieParser());
@@ -18,53 +19,6 @@ app.use(cookieSession({
 }));
 app.use(morgan("tiny"));
 app.set("view engine", "ejs");
-
-const urlDatabase = {
-  b6UTxQ: {
-    longURL: "https://www.tsn.ca",
-    userID: "aJ48lW"
-  },
-  i3BoGr: {
-    longURL: "https://www.google.ca",
-    userID: "aJ48lW"
-  }
-};
-
-// when new users are made through registration, pushed onto this empty object
-const users = {};
-
-// helper functions:
-function generateRandomString() {
-  return Math.random().toString(36).slice(2,8);
-}
-
-function createNewUser(req) {
-  const email = req.body.email;
-  const password = req.body.password;
-  const hashedPassword = bcrypt.hashSync(password, 10);
-  const ID = generateRandomString();
-  users[ID] = {
-    id: ID,
-    email: email,
-    hashedPassword: hashedPassword
-  };
-  return users[ID];
-}
-
-function checkPassword(user, newPassword) {
-  return bcrypt.compareSync(newPassword, user.hashedPassword);
-}
-
-function urlsForUser(id) {
-  const urls = {};
-  for (let url in urlDatabase) {
-    if (urlDatabase[url].userID === id) {
-      urls[url] = {};
-      urls[url] = urlDatabase[url];
-    }
-  }
-  return urls;
-}
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -93,7 +47,10 @@ app.post("/register", (req, res) => {
   if (user) {
     res.status(400).send("email already used, please try another email");
   } else {
-    const newUser = createNewUser(req);
+    const email = req.body.email;
+    const password = req.body.password;
+    const hashedPassword = bcrypt.hashSync(password, 10);
+    const newUser = createNewUser(email, hashedPassword);
     req.session.user_id = newUser.id;
     res.redirect("/urls");
   }
@@ -112,8 +69,7 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const user = getUserByEmail(req.body.email, users);
   if (user) {
-    const passwordCorrect = checkPassword(user, req.body.password);
-    if (passwordCorrect) {
+    if (bcrypt.compareSync(req.body.password, user.hashedPassword)) {
       req.session.user_id = user.id;
       res.redirect("/urls");
     } else {
@@ -132,7 +88,7 @@ app.post("/logout", (req, res) => {
 
 // GET req to path /urls that displays table of long and short URLs
 app.get("/urls", (req, res) => {
-  const urls = urlsForUser(req.session.user_id);
+  const urls = urlsForUser(req.session.user_id, urlDatabase);
   const templateVars = {
     userID: req.session.user_id,
     user: users[req.session.user_id],
