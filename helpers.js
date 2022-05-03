@@ -24,14 +24,14 @@ const getUserByEmail = function(email, database) {
   return null;
 };
 
-const createNewUser = function(email, hashedPassword) {
+const createNewUser = function(email, hashedPassword, database) {
   const ID = generateRandomString();
-  users[ID] = {
+  database[ID] = {
     id: ID,
     email: email,
     hashedPassword: hashedPassword
   };
-  return users[ID];
+  return database[ID];
 };
 
 const urlsForUser = function(id, database) {
