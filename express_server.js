@@ -50,13 +50,13 @@ function createNewUser(req) {
   return users[ID];
 }
 
-function checkEmailExist(newEmail) {
-  for (let user in users) {
-    if (users[user].email === newEmail) {
-      return users[user];
+function getUserByEmail(email, database) {
+  for (let user in database) {
+    if (database[user].email === email) {
+      return database[user];
     }
   }
-  return false;
+  return null;
 }
 
 function checkPassword(user, newPassword) {
@@ -97,7 +97,7 @@ app.get("/register", (req, res) => {
 
 // POST req to /register to add user to users object and display in header as logged in
 app.post("/register", (req, res) => {
-  const user = checkEmailExist(req.body.email);
+  const user = getUserByEmail(req.body.email, users)
   if (user) {
     res.status(400).send("email already used, please try another email");
   } else {
@@ -118,7 +118,7 @@ app.get("/login", (req, res) => {
 
 // new POST req to /login
 app.post("/login", (req, res) => {
-  const user = checkEmailExist(req.body.email);
+  const user = getUserByEmail(req.body.email, users);
   if (user) {
     const passwordCorrect = checkPassword(user, req.body.password);
     if (passwordCorrect) {
