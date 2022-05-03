@@ -43,7 +43,7 @@ app.get("/register", (req, res) => {
 
 // POST req to /register to add user to users object and display in header as logged in
 app.post("/register", (req, res) => {
-  const user = getUserByEmail(req.body.email, users)
+  const user = getUserByEmail(req.body.email, users);
   if (user) {
     res.status(400).send("email already used, please try another email");
   } else {
