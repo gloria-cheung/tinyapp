@@ -179,7 +179,11 @@ app.get("/urls/:shortURL", (req, res) => {
     userID: req.cookies["user_id"],
     user: users[req.cookies["user_id"]]
   };
-  res.render("urls_show", templateVars);
+  if (urlDatabase[req.params.shortURL].userID === req.cookies["user_id"]) {
+    res.render("urls_show", templateVars);
+  } else {
+    res.status(400).send("can only view URL if you created it");
+  }
 });
 
 // GET request to redirect us to the longURL webpage
@@ -187,24 +191,44 @@ app.get("/u/:shortURL", (req, res) => {
   if (!urlDatabase[req.params.shortURL]) {
     res.status(400).send("shortURL ID does not exist");
   } else {
-    const longURL = urlDatabase[req.params.shortURL].longURL;
-    res.redirect(longURL);
+    if (urlDatabase[req.params.shortURL].userID === req.cookies["user_id"]) {
+      const longURL = urlDatabase[req.params.shortURL].longURL;
+      res.redirect(longURL);
+    } else {
+      res.status(400).send("can only view URL if you created it");
+    }
   }
 });
 
 // Delete path from form
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
-  delete urlDatabase[shortURL];
-  res.redirect("/urls");
+  if (urlDatabase[shortURL].userID === req.cookies["user_id"]) {
+    if (!urlDatabase[shortURL]) {
+      res.status(400).send("this URL does not exist");
+    } else {
+      delete urlDatabase[shortURL];
+      res.redirect("/urls");
+    }
+  } else {
+    res.status(400).send("cannot delete URL unless you created it");
+  }
 });
 
 // Update path from form
 app.post("/urls/:shortURL", (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = req.params.shortURL;
-  urlDatabase[shortURL].longURL = longURL;
-  res.redirect("/urls");
+  if (urlDatabase[shortURL].userID === req.cookies["user_id"]) {
+    if (!urlDatabase[shortURL]) {
+      res.status(400).send("this URL does not exist")
+    } else {
+      urlDatabase[shortURL].longURL = longURL;
+      res.redirect("/urls");
+    }
+  } else {
+    res.status(400).send("cannot edit URL unless you created it");
+  }
 });
 
 //  NO LONGER NEEDING THIS PATH DUE TO CHANGING FROM LOGIN WITH JUST USERNAME TO REGISTERING WITH EMAIL AND PASSWORD
