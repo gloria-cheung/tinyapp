@@ -5,9 +5,11 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const morgan = require("morgan");
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
+app.use(morgan("tiny"));
 app.set("view engine", "ejs");
 
 const urlDatabase = {
@@ -133,7 +135,11 @@ app.get("/urls/new", (req, res) => {
     userID: req.cookies["user_id"],
     user: users[req.cookies["user_id"]]
   };
-  res.render("urls_new", templateVars);
+  if (!req.cookies["user_id"]) {
+    res.status(400).send("please login / register in order to shorten URL");
+  } else {
+    res.render("urls_new", templateVars);
+  }
 });
 
 // POST request using info from form submitted to alter urlDatabase object and redirect to show the URL is created
