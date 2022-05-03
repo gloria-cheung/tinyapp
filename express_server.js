@@ -14,13 +14,13 @@ app.set("view engine", "ejs");
 
 const urlDatabase = {
   b6UTxQ: {
-        longURL: "https://www.tsn.ca",
-        userID: "aJ48lW"
-    },
-    i3BoGr: {
-        longURL: "https://www.google.ca",
-        userID: "aJ48lW"
-    }
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW"
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW"
+  }
 };
 
 // when new users are made through registration, pushed onto this empty object
@@ -170,8 +170,12 @@ app.get("/urls/:shortURL", (req, res) => {
 
 // GET request to redirect us to the longURL webpage
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL].longURL;
-  res.redirect(longURL);
+  if (!urlDatabase[req.params.shortURL]) {
+    res.status(400).send("shortURL ID does not exist");
+  } else {
+    const longURL = urlDatabase[req.params.shortURL].longURL;
+    res.redirect(longURL);
+  }
 });
 
 // Delete path from form
