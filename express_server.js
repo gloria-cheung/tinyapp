@@ -21,7 +21,7 @@ app.use(morgan("tiny"));
 app.set("view engine", "ejs");
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.redirect("/urls");
 });
 
 app.get("/urls.json", (req, res) => {
@@ -137,17 +137,13 @@ app.get("/urls/:shortURL", (req, res) => {
   }
 });
 
-// GET request to redirect us to the longURL webpage
+// GET request to redirect us to the longURL webpage (even if not logged in)
 app.get("/u/:shortURL", (req, res) => {
   if (!urlDatabase[req.params.shortURL]) {
     res.status(400).send("shortURL ID does not exist");
   } else {
-    if (urlDatabase[req.params.shortURL].userID === req.session.user_id) {
       const longURL = urlDatabase[req.params.shortURL].longURL;
       res.redirect(longURL);
-    } else {
-      res.status(400).send("can only view URL if you created it");
-    }
   }
 });
 
