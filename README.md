@@ -24,3 +24,9 @@ Create New URL:
 - Install all dependencies (using the `npm install` command).
 - Run the development web server using the `node express_server.js` command.
 - If using nodemon, run web server using `npm start` command.
+
+## Connect With Me
+
+[Github](https://github.com/gloria-cheung)
+-- [Linkedin](http://www.linkedin.com/in/gloria-cheung) --
+[Portfolio](http://www.gloria-cheung.com)
